@@ -13,7 +13,7 @@ type Scanner struct {
 
 func (s *Scanner) scanTokens() {
 
-	for s.current >= len(s.Source) {
+	for !s.isAtEnd() {
 		s.start = s.current
 		s.scanTokens()
 	}
@@ -27,7 +27,10 @@ func (s *Scanner) scanTokens() {
 }
 
 func (s *Scanner) scanToken() {
-	// Single character lexemes
+	// Single character lexemes (e.g. ( ) { } , . - + ; *)
+
+	// Two character lexemes (e.g. != == >= <=)
+
 	char := s.next()
 	switch char {
 	case "(":
@@ -60,12 +63,65 @@ func (s *Scanner) scanToken() {
 	case "*":
 		s.addToken(STAR)
 		break
+	case "!":
+		if s.match("=") {
+			s.addToken(BANG_EQUAL)
+		} else {
+			s.addToken(BANG)
+		}
+		break
+	case "=":
+		if s.match("=") {
+			s.addToken(EQUAL_EQUAL)
+		} else {
+			s.addToken(EQUAL)
+		}
+		break
+	case "<":
+		if s.match("=") {
+			s.addToken(LESS_EQUAL)
+		} else {
+			s.addToken(LESS)
+		}
+		break
+	case ">":
+		if s.match("=") {
+			s.addToken(GREATER_EQUAL)
+		} else {
+			s.addToken(GREATER)
+		}
+		break
 	}
+
 }
 
+// next character in source to scan
 func (s *Scanner) next() string {
 	s.current++
 	return strings.Split(s.Source, "")[s.current-1]
+}
+
+func (s *Scanner) match(expected string) bool {
+	if s.isAtEnd() {
+		return false
+	}
+	if strings.Split(s.Source, "")[s.current] != expected {
+		return false
+	}
+
+	s.current++
+	return true
+}
+
+func (s *Scanner) isAtEnd() bool {
+	return s.current >= len(s.Source)
+}
+
+func (s *Scanner) peek() string {
+	if s.isAtEnd() {
+		return "\\0"
+	}
+	return strings.Split(s.Source, "")[s.current]
 }
 
 func (s *Scanner) addToken(tType TokenType) {
