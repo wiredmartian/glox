@@ -5,8 +5,8 @@ import "fmt"
 type Token struct {
 	tokenType TokenType
 	lexeme    string
-	literal   interface{}
-	lint      int
+	literal   *interface{}
+	line      int
 }
 
 func (t *Token) toString() string {
