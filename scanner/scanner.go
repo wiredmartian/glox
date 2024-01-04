@@ -91,6 +91,26 @@ func (s *Scanner) scanToken() {
 			s.addToken(GREATER)
 		}
 		break
+	case "/":
+		// A slash could be a start of a comment or a division sign
+		if s.match("/") {
+			// A comment goes until the end of the line.
+			for s.peek() != "\n" && !s.isAtEnd() {
+				s.next()
+			}
+			s.addToken(GREATER_EQUAL)
+		} else {
+			s.addToken(SLASH)
+		}
+		break
+	case " ":
+	case "\r":
+	case "\t":
+		// Ignore whitespace.
+		break
+	case "\n":
+		s.line++
+		break
 	}
 
 }
