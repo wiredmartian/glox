@@ -1,6 +1,10 @@
 package scanner
 
-import "strings"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type Scanner struct {
 	Source string
@@ -111,10 +115,35 @@ func (s *Scanner) scanToken() {
 	case "\n":
 		s.line++
 		break
+	case "\"":
+		s.string()
+		break
+	default:
+		if s.isDigit(char) {
+			s.number()
+		} else {
+			fmt.Printf("Unexpected character at line: %v", s.line)
+		}
+		break
 	}
 
 }
 
+func (s *Scanner) addToken(tType TokenType) {
+	s.addTokenLiteral(tType, nil)
+}
+
+func (s *Scanner) addTokenLiteral(tType TokenType, literal interface{}) {
+	text := s.Source[s.start:s.current]
+	s.Tokens = append(s.Tokens, Token{
+		tokenType: tType,
+		lexeme:    text,
+		literal:   literal,
+		line:      s.line,
+	})
+}
+
+// Helper functions
 // next character in source to scan
 func (s *Scanner) next() string {
 	s.current++
@@ -137,6 +166,10 @@ func (s *Scanner) isAtEnd() bool {
 	return s.current >= len(s.Source)
 }
 
+func (s *Scanner) isDigit(char string) bool {
+	return char >= "0" && char <= "9"
+}
+
 func (s *Scanner) peek() string {
 	if s.isAtEnd() {
 		return "\\0"
@@ -144,16 +177,48 @@ func (s *Scanner) peek() string {
 	return strings.Split(s.Source, "")[s.current]
 }
 
-func (s *Scanner) addToken(tType TokenType) {
-	s.addTokenLiteral(tType, nil)
+func (s *Scanner) peekNext() string {
+	if s.current+1 > len(s.Source) {
+		return "\\0"
+	}
+	return s.Source[s.current+1:]
 }
 
-func (s *Scanner) addTokenLiteral(tType TokenType, literal *interface{}) {
-	text := s.Source[s.start:s.current]
-	s.Tokens = append(s.Tokens, Token{
-		tokenType: tType,
-		lexeme:    text,
-		literal:   literal,
-		line:      s.line,
-	})
+func (s *Scanner) string() {
+	for s.peek() != "\"" && !s.isAtEnd() {
+		if s.peek() != "\n" {
+			s.line++
+		}
+		s.next()
+	}
+	if s.isAtEnd() {
+		fmt.Printf("Unterminated string at line: %v", s.line)
+		return
+	}
+	// The closing ".
+	s.next()
+
+	// Trim the surrounding quotes.
+	value := s.Source[s.start+1 : s.current-1]
+	s.addTokenLiteral(STRING, value)
+}
+
+func (s *Scanner) number() {
+	for s.isDigit(s.peek()) {
+		s.next()
+	}
+	// Look for a fractional part.
+	if s.peek() == "." && s.isDigit(s.peekNext()) {
+		// Consume the "."
+		s.next()
+
+		for s.isDigit(s.peek()) {
+			s.next()
+		}
+	}
+	value, err := strconv.ParseFloat(s.Source[s.start:s.current], 32)
+	if err != nil {
+		fmt.Printf("Unable to convert %v to a numerical literal value", value)
+	}
+	s.addTokenLiteral(NUMBER, value)
 }
