@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -114,6 +115,16 @@ func (s *Scanner) scanToken() {
 	case "\n":
 		s.line++
 		break
+	case "\"":
+		s.string()
+		break
+	default:
+		if s.isDigit(char) {
+			s.number()
+		} else {
+			fmt.Printf("Unexpected character at line: %v", s.line)
+		}
+		break
 	}
 
 }
@@ -166,6 +177,13 @@ func (s *Scanner) peek() string {
 	return strings.Split(s.Source, "")[s.current]
 }
 
+func (s *Scanner) peekNext() string {
+	if s.current+1 > len(s.Source) {
+		return "\\0"
+	}
+	return s.Source[s.current+1:]
+}
+
 func (s *Scanner) string() {
 	for s.peek() != "\"" && !s.isAtEnd() {
 		if s.peek() != "\n" {
@@ -174,7 +192,7 @@ func (s *Scanner) string() {
 		s.next()
 	}
 	if s.isAtEnd() {
-		fmt.Printf("%v Unterminated string", s.line)
+		fmt.Printf("Unterminated string at line: %v", s.line)
 		return
 	}
 	// The closing ".
@@ -183,4 +201,24 @@ func (s *Scanner) string() {
 	// Trim the surrounding quotes.
 	value := s.Source[s.start+1 : s.current-1]
 	s.addTokenLiteral(STRING, value)
+}
+
+func (s *Scanner) number() {
+	for s.isDigit(s.peek()) {
+		s.next()
+	}
+	// Look for a fractional part.
+	if s.peek() == "." && s.isDigit(s.peekNext()) {
+		// Consume the "."
+		s.next()
+
+		for s.isDigit(s.peek()) {
+			s.next()
+		}
+	}
+	value, err := strconv.ParseFloat(s.Source[s.start:s.current], 32)
+	if err != nil {
+		fmt.Printf("Unable to convert %v to a numerical literal value", value)
+	}
+	s.addTokenLiteral(NUMBER, value)
 }
