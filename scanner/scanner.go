@@ -1,6 +1,9 @@
 package scanner
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Scanner struct {
 	Source string
@@ -115,6 +118,21 @@ func (s *Scanner) scanToken() {
 
 }
 
+func (s *Scanner) addToken(tType TokenType) {
+	s.addTokenLiteral(tType, nil)
+}
+
+func (s *Scanner) addTokenLiteral(tType TokenType, literal interface{}) {
+	text := s.Source[s.start:s.current]
+	s.Tokens = append(s.Tokens, Token{
+		tokenType: tType,
+		lexeme:    text,
+		literal:   literal,
+		line:      s.line,
+	})
+}
+
+// Helper functions
 // next character in source to scan
 func (s *Scanner) next() string {
 	s.current++
@@ -137,6 +155,10 @@ func (s *Scanner) isAtEnd() bool {
 	return s.current >= len(s.Source)
 }
 
+func (s *Scanner) isDigit(char string) bool {
+	return char >= "0" && char <= "9"
+}
+
 func (s *Scanner) peek() string {
 	if s.isAtEnd() {
 		return "\\0"
@@ -144,16 +166,21 @@ func (s *Scanner) peek() string {
 	return strings.Split(s.Source, "")[s.current]
 }
 
-func (s *Scanner) addToken(tType TokenType) {
-	s.addTokenLiteral(tType, nil)
-}
+func (s *Scanner) string() {
+	for s.peek() != "\"" && !s.isAtEnd() {
+		if s.peek() != "\n" {
+			s.line++
+		}
+		s.next()
+	}
+	if s.isAtEnd() {
+		fmt.Printf("%v Unterminated string", s.line)
+		return
+	}
+	// The closing ".
+	s.next()
 
-func (s *Scanner) addTokenLiteral(tType TokenType, literal *interface{}) {
-	text := s.Source[s.start:s.current]
-	s.Tokens = append(s.Tokens, Token{
-		tokenType: tType,
-		lexeme:    text,
-		literal:   literal,
-		line:      s.line,
-	})
+	// Trim the surrounding quotes.
+	value := s.Source[s.start+1 : s.current-1]
+	s.addTokenLiteral(STRING, value)
 }
