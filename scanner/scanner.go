@@ -121,6 +121,8 @@ func (s *Scanner) scanToken() {
 	default:
 		if s.isDigit(char) {
 			s.number()
+		} else if s.isAlpha(char) {
+			s.identifier()
 		} else {
 			fmt.Printf("Unexpected character at line: %v", s.line)
 		}
@@ -168,6 +170,15 @@ func (s *Scanner) isAtEnd() bool {
 
 func (s *Scanner) isDigit(char string) bool {
 	return char >= "0" && char <= "9"
+}
+
+func (s *Scanner) isAlpha(char string) bool {
+	return (char >= "a" && char <= "z") ||
+		(char >= "A" && char <= "Z") || char == "_"
+}
+
+func (s *Scanner) isAlphanumeric(char string) bool {
+	return s.isAlpha(char) || s.isDigit(char)
 }
 
 func (s *Scanner) peek() string {
@@ -221,4 +232,11 @@ func (s *Scanner) number() {
 		fmt.Printf("Unable to convert %v to a numerical literal value", value)
 	}
 	s.addTokenLiteral(NUMBER, value)
+}
+
+func (s *Scanner) identifier() {
+	for s.isAlphanumeric(s.peek()) {
+		s.next()
+	}
+	s.addToken(IDENTIFIER)
 }
