@@ -238,5 +238,10 @@ func (s *Scanner) identifier() {
 	for s.isAlphanumeric(s.peek()) {
 		s.next()
 	}
+	text := s.Source[s.start:s.current]
+	var tokenType TokenType = keywords[text]
+	if &tokenType == nil {
+		tokenType = IDENTIFIER
+	}
 	s.addToken(IDENTIFIER)
 }
