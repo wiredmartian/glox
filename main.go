@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"glox/scanner"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	source := "() {} "
+	scanner := scanner.Scanner{
+		Source: source,
+	}
+
+	scanner.ScanTokens()
+
+	fmt.Printf("Tokens: %v", scanner.Tokens)
 }

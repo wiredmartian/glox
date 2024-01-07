@@ -15,11 +15,11 @@ type Scanner struct {
 	line    int
 }
 
-func (s *Scanner) scanTokens() {
+func (s *Scanner) ScanTokens() {
 
 	for !s.isAtEnd() {
 		s.start = s.current
-		s.scanTokens()
+		s.scanToken()
 	}
 
 	s.Tokens = append(s.Tokens, Token{
