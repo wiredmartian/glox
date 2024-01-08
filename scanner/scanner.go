@@ -99,10 +99,16 @@ func (s *Scanner) scanToken() {
 		// A slash could be a start of a comment or a division sign
 		if s.match("/") {
 			// A comment goes until the end of the line.
+			// Single line comment
 			for s.peek() != "\n" && !s.isAtEnd() {
 				s.next()
 			}
-			s.addToken(GREATER_EQUAL)
+		} else if s.match("*") {
+			// multi-line comment support
+			for s.peek() != "/" && s.peekAt(s.current-1) != "*" && !s.isAtEnd() {
+				s.next()
+			}
+
 		} else {
 			s.addToken(SLASH)
 		}
@@ -186,6 +192,10 @@ func (s *Scanner) peek() string {
 		return "\\0"
 	}
 	return strings.Split(s.Source, "")[s.current]
+}
+
+func (s *Scanner) peekAt(position int) string {
+	return strings.Split(s.Source, "")[position]
 }
 
 func (s *Scanner) peekNext() string {
