@@ -53,7 +53,7 @@ const (
 )
 
 // Maps iota token to strings
-var TokenTypeMap = map[int]string{
+var StringTokenType = map[int]string{
     int(LEFT_PAREN):    "LEFT_PAREN",
     int(RIGHT_PAREN):   "RIGHT_PAREN",
     int(LEFT_BRACE):    "LEFT_BRACE",
