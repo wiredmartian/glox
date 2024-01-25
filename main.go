@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"glox/scanner"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	source := "var num = 1;"
+
+	scanner := scanner.Scanner{}
+	scanner.Source = source
+
+	scanner.ScanTokens()
+	fmt.Println("Tokens:")
+	for _, token := range scanner.Tokens {
+		fmt.Println(token.ToString())
+	}
 }
