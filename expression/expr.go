@@ -4,8 +4,8 @@ import "glox/scanner"
 
 // Visitor pattern
 type Visitor interface {
-	VisitAssignExpr(expr *AssignExpr) interface{}
-	VisitBinaryExpr(expr *BinaryExpr) interface{}
+	VisitAssignExpr(expr *Assign) interface{}
+	VisitBinaryExpr(expr *Binary) interface{}
 	VisitCallExpr(expr *Call) interface{}
 	VisitGroupingExpr(expr *Grouping) interface{}
 	VisitLiteralExpr(expr *Literal) interface{}
@@ -21,23 +21,23 @@ type Expr interface {
 }
 
 // =, +=, -=, *=, /=
-type AssignExpr struct {
+type Assign struct {
 	Name  scanner.Token
 	Value Expr
 }
 
-func (a *AssignExpr) Accept(visitor Visitor) interface{} {
+func (a *Assign) Accept(visitor Visitor) interface{} {
 	return visitor.VisitAssignExpr(a)
 }
 
 // x + y
-type BinaryExpr struct {
+type Binary struct {
 	Left     Expr
 	Right    Expr
 	Operator scanner.Token
 }
 
-func (b *BinaryExpr) Accept(visitor Visitor) interface{} {
+func (b *Binary) Accept(visitor Visitor) interface{} {
 	return visitor.VisitBinaryExpr(b)
 }
 
