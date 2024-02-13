@@ -23,10 +23,10 @@ func (s *Scanner) ScanTokens() {
 	}
 
 	s.Tokens = append(s.Tokens, Token{
-		tokenType: EOF,
+		TokenType: EOF,
 		Lexeme:    "",
 		Literal:   nil,
-		line:      s.line,
+		Line:      s.line,
 	})
 }
 
@@ -144,10 +144,10 @@ func (s *Scanner) addToken(tType TokenType) {
 func (s *Scanner) addTokenLiteral(tType TokenType, literal interface{}) {
 	text := s.Source[s.start:s.current]
 	s.Tokens = append(s.Tokens, Token{
-		tokenType: tType,
+		TokenType: tType,
 		Lexeme:    text,
 		Literal:   literal,
-		line:      s.line,
+		Line:      s.line,
 	})
 }
 

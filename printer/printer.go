@@ -4,6 +4,9 @@ import "glox/expression"
 
 type Printer struct{}
 
+// Printer needs to implement the Visitor interface
+var _ expression.Visitor = &Printer{}
+
 // VisitAssignExpr implements expression.Visitor.
 func (*Printer) VisitAssignExpr(expr *expression.Assign) interface{} {
 	panic("unimplemented")
@@ -34,9 +37,6 @@ func (*Printer) VisitVariableExpr(expr *expression.Variable) interface{} {
 	panic("unimplemented")
 }
 
-// Printer needs to implement the Visitor interface
-var _ expression.Visitor = &Printer{}
-
 func (p *Printer) VisitBinaryExpr(expr *expression.Binary) interface{} {
 	return p.parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 }
@@ -61,8 +61,12 @@ func (p *Printer) parenthesize(name string, exprs ...expression.Expr) string {
 	builder += "(" + name
 	for _, expr := range exprs {
 		builder += " "
-		builder += expr.Accept(p).(string)
+		builder += expr.Accept(p).(string) // This assertion is not safe
 	}
 	builder += ")"
 	return builder
+}
+
+func (p *Printer) Print(expr expression.Expr) interface{} {
+	return expr.Accept(p)
 }

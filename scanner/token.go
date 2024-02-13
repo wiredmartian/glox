@@ -3,12 +3,12 @@ package scanner
 import "fmt"
 
 type Token struct {
-	tokenType TokenType
+	TokenType TokenType
 	Lexeme    string
 	Literal   interface{}
-	line      int
+	Line      int
 }
 
 func (t *Token) ToString() string {
-	return fmt.Sprintf("%v %v %v", StringTokenType[int(t.tokenType)], t.Lexeme, t.Literal)
+	return fmt.Sprintf("%v %v %v", StringTokenType[int(t.TokenType)], t.Lexeme, t.Literal)
 }
