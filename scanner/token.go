@@ -4,11 +4,11 @@ import "fmt"
 
 type Token struct {
 	tokenType TokenType
-	lexeme    string
-	literal   interface{}
+	Lexeme    string
+	Literal   interface{}
 	line      int
 }
 
 func (t *Token) ToString() string {
-	return fmt.Sprintf("%v %v %v", StringTokenType[int(t.tokenType)], t.lexeme, t.literal)
+	return fmt.Sprintf("%v %v %v", StringTokenType[int(t.tokenType)], t.Lexeme, t.Literal)
 }
