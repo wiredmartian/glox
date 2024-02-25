@@ -32,11 +32,49 @@ func (p *Parser) expression() expr.Expr {
 }
 
 func (p *Parser) equality() expr.Expr {
-	return nil
+	exp := p.comparison()
+	for p.match(scanner.BANG, scanner.BANG_EQUAL) {
+		operator := p.previous()
+		right := p.comparison()
+		exp = &expr.Binary{
+			Left:     exp,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+	return exp
 }
 
 func (p *Parser) comparison() expr.Expr {
+	exp := p.term()
+	for p.match(scanner.GREATER, scanner.GREATER_EQUAL, scanner.LESS, scanner.LESS_EQUAL) {
+		operator := p.previous()
+		right := p.term()
+		exp = &expr.Binary{
+			Left:     exp,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+	return exp
+}
+
+func (p *Parser) factor() expr.Expr {
 	return nil
+}
+
+func (p *Parser) term() expr.Expr {
+	exp := p.factor()
+	for p.match(scanner.MINUS, scanner.PLUS) {
+		operator := p.previous()
+		right := p.factor()
+		exp = &expr.Binary{
+			Left:     exp,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+	return exp
 }
 
 // Helper functions
