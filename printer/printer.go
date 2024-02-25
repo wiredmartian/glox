@@ -1,62 +1,62 @@
 package printer
 
-import "glox/expression"
+import "glox/expr"
 
 type Printer struct{}
 
 // Printer needs to implement the Visitor interface
-var _ expression.Visitor = &Printer{}
+var _ expr.Visitor = &Printer{}
 
 // VisitAssignExpr implements expression.Visitor.
-func (*Printer) VisitAssignExpr(expr *expression.Assign) interface{} {
+func (*Printer) VisitAssignExpr(expr *expr.Assign) interface{} {
 	panic("unimplemented")
 }
 
-// VisitCallExpr implements expression.Visitor.
-func (*Printer) VisitCallExpr(expr *expression.Call) interface{} {
+// VisitCallExpr implements expr.Visitor.
+func (*Printer) VisitCallExpr(expr *expr.Call) interface{} {
 	panic("unimplemented")
 }
 
-// VisitCommaExpr implements expression.Visitor.
-func (*Printer) VisitCommaExpr(expr *expression.Comma) interface{} {
+// VisitCommaExpr implements expr.Visitor.
+func (*Printer) VisitCommaExpr(expr *expr.Comma) interface{} {
 	panic("unimplemented")
 }
 
-// VisitLogicalExpr implements expression.Visitor.
-func (*Printer) VisitLogicalExpr(expr *expression.Logical) interface{} {
+// VisitLogicalExpr implements expr.Visitor.
+func (*Printer) VisitLogicalExpr(expr *expr.Logical) interface{} {
 	panic("unimplemented")
 }
 
-// VisitTernaryExpr implements expression.Visitor.
-func (*Printer) VisitTernaryExpr(expr *expression.Ternary) interface{} {
+// VisitTernaryExpr implements expr.Visitor.
+func (*Printer) VisitTernaryExpr(expr *expr.Ternary) interface{} {
 	panic("unimplemented")
 }
 
-// VisitVariableExpr implements expression.Visitor.
-func (*Printer) VisitVariableExpr(expr *expression.Variable) interface{} {
+// VisitVariableExpr implements expr.Visitor.
+func (*Printer) VisitVariableExpr(expr *expr.Variable) interface{} {
 	panic("unimplemented")
 }
 
-func (p *Printer) VisitBinaryExpr(expr *expression.Binary) interface{} {
+func (p *Printer) VisitBinaryExpr(expr *expr.Binary) interface{} {
 	return p.parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 }
 
-func (p *Printer) VisitGroupingExpr(expr *expression.Grouping) interface{} {
+func (p *Printer) VisitGroupingExpr(expr *expr.Grouping) interface{} {
 	return p.parenthesize("group", expr.Expression)
 }
 
-func (p *Printer) VisitLiteralExpr(expr *expression.Literal) interface{} {
+func (p *Printer) VisitLiteralExpr(expr *expr.Literal) interface{} {
 	if expr.Value == nil {
 		return "nil"
 	}
 	return expr.Value.(string)
 }
 
-func (p *Printer) VisitUnaryExpr(expr *expression.Unary) interface{} {
+func (p *Printer) VisitUnaryExpr(expr *expr.Unary) interface{} {
 	return p.parenthesize(expr.Operator.Lexeme, expr.Right)
 }
 
-func (p *Printer) parenthesize(name string, exprs ...expression.Expr) string {
+func (p *Printer) parenthesize(name string, exprs ...expr.Expr) string {
 	builder := ""
 	builder += "(" + name
 	for _, expr := range exprs {
@@ -67,6 +67,6 @@ func (p *Printer) parenthesize(name string, exprs ...expression.Expr) string {
 	return builder
 }
 
-func (p *Printer) Print(expr expression.Expr) interface{} {
+func (p *Printer) Print(expr expr.Expr) interface{} {
 	return expr.Accept(p)
 }

@@ -1,4 +1,4 @@
-package expression
+package expr
 
 import "glox/scanner"
 

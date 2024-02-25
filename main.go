@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"glox/expression"
+	"glox/expr"
 	"glox/printer"
 	"glox/scanner"
 )
@@ -28,9 +28,9 @@ func main() {
 	// 	new Expr.Grouping(
 	// 		new Expr.Literal(45.67)));
 
-	expr := expression.Binary{
-		Left: &expression.Unary{
-			Right: &expression.Literal{
+	expr := expr.Binary{
+		Left: &expr.Unary{
+			Right: &expr.Literal{
 				Value: "123",
 			},
 			Operator: scanner.Token{
@@ -46,8 +46,8 @@ func main() {
 			Literal:   nil,
 			Line:      1,
 		},
-		Right: &expression.Grouping{
-			Expression: &expression.Literal{
+		Right: &expr.Grouping{
+			Expression: &expr.Literal{
 				Value: "45.67",
 			},
 		},
